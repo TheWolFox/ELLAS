@@ -46,8 +46,20 @@ class ColaboreController {
     }
   }
 
+  async baixaTemplate(req, res) {
+    try {
+      const filePath = path.join(process.env.DOWNLOAD_DIR, req.params.nomeTemplate + '_TEMPLATE.xlsx');
+      res.download(filePath, (err) => {
+        if (err) {
+          return res.status(400).send('Failed to download file.', err);
+        }
+      });
+    } catch (error) {
+      res.status(400).send('An error occurred.');
+    }
+  }
 }
-  
+
 module.exports = ColaboreController;
 
 const checkFileExists = (filePath, timeout) => {
