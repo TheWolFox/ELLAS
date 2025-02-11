@@ -348,6 +348,14 @@ const BuscaOnePage = () => {
                   </li>
                   <li>
                     <button
+                      onClick={handleNavigation("/colabore")}
+                      className="cursor-pointer hover:text-gray-700 hover:font-bold"
+                    >
+                      <Heading as="p">Collaborate</Heading>
+                    </button>
+                  </li>
+                  <li>
+                    <button
                       onClick={handleNavigation("/contato")}
                       className="cursor-pointer hover:text-gray-700 hover:font-bold"
                     >

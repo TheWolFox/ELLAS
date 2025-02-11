@@ -9,6 +9,8 @@ import { RadioGroup } from "./RadioGroup";
 // src/components/index.tsx
 import GoogleMapComponent from "./GoogleMap";
 import { Radio } from "./Radio";
+import { Footer } from "./Footer";
+import { Header } from "./Header";
 export { 
   Img, 
   Text, 
@@ -19,6 +21,8 @@ export {
   Input, 
   RadioGroup, 
   GoogleMapComponent as GoogleMap, // Corrija aqui
-  Radio 
+  Radio ,
+  Footer,
+  Header
 }
 

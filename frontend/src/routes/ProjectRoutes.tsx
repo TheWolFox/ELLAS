@@ -19,6 +19,7 @@ import Contato from "../pages/Contato/Contato";
 import Faq from "../pages/FAQ";
 import GraphView from "../components/GraphView";
 import PrivateRoute from "../components/PrivateRoute"; // Import the PrivateRoute component
+import Colabore from "pages/Colabore";
 
 const ProjectRoutes = () => {
   let element = useRoutes([
@@ -40,6 +41,7 @@ const ProjectRoutes = () => {
     { path: "/buscatwoone", element: <BuscaTwoOne /> },
     { path: "/estilos", element: <Estilos /> },
     { path: "/componentes", element: <Componentes /> },
+    { path: "/colabore", element: <Colabore /> },
     { path: "/apoie-ellas", element: <ApoieEllas /> },
     { path: "/contato", element: <Contato /> },
     { path: "/faq", element: <Faq /> },

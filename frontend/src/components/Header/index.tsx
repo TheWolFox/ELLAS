@@ -119,4 +119,4 @@ const Header: React.FC<Props> = ({ ...props }) => {
   );
 };
 
-export default Header;
+export {Header};
