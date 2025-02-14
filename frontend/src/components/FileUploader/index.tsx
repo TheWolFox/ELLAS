@@ -4,9 +4,13 @@ import React, { useState } from 'react';
 
 interface FileUploaderProps {
     dataType: string;
+    setResponseBody: (responseBody: string | null) => void;
+    setResponseCode: (responseCode: number | null) => void;
+    setIsloading: (isLoading: boolean) => void;
+    setSelectedDataType: (selectedDataType: string | null) => void;
   }
 
-  const FileUploader: React.FC<FileUploaderProps> = ({ dataType }) => {
+  const FileUploader: React.FC<FileUploaderProps> = ({ dataType, setResponseBody, setResponseCode, setIsloading, setSelectedDataType }) => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -17,6 +21,7 @@ interface FileUploaderProps {
     };
 
     const handleUpload = async () => {
+        setIsloading(true);
         var bodyFormData = new FormData();
         bodyFormData.append('file', selectedFile);
         axios({
@@ -25,11 +30,19 @@ interface FileUploaderProps {
                 data: bodyFormData,
                 headers: { "Content-Type": "multipart/form-data" },
             })
-            .then(function (response) {
-                console.log(response);
+            .then((response) => {
+                setResponseBody(response.data);
+                setResponseCode(response.status);
+                setIsloading(false);
+                setSelectedDataType(null);
+                setSelectedFile(null);
             })
-            .catch(function (response) {
-                console.log(response);
+            .catch((error) => {
+                setResponseBody(error.response.data);
+                setResponseCode(error.response.status);
+                setIsloading(false);
+                setSelectedDataType(null);
+                setSelectedFile(null);
             });
     };
 
@@ -42,7 +55,7 @@ interface FileUploaderProps {
                 <input type="file" className="hidden" onChange={handleFileChange} />
             </label>
         </div>
-        {selectedFile && (
+        {selectedFile && dataType && (
             <div className="flex justify-center mt-2">
                 <button className="mt-2 px-4 py-2 bg-gray-700 text-white-A700 rounded-lg hover:bg-gray-800 text-center"
                         onClick={handleUpload}>

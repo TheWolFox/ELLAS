@@ -30,7 +30,7 @@ const DownloadButton: React.FC<DownloadButtonProps> = ({ dataType }) => {
     return (
         <>
         {dataType && (
-            <button className="px-4 py-2 bg-gray-700 text-white-A700 rounded-lg hover:bg-gray-800"
+            <button className="px-4 py-2 bg-gray-700 text-white-A700 rounded-lg text-sm hover:bg-gray-800"
                     onClick={handleDownload}>
             DOWNLOAD TEMPLATE
             </button>
