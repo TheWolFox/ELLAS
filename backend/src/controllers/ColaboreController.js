@@ -1,23 +1,26 @@
 const fs = require('fs');
 const path = require('path');
 const { spawn } = require('child_process');
+const { v4: uuidv4 } = require('uuid');
 require('dotenv').config(); 
 
 class ColaboreController {
   async enviaArquivo(req, res) {
     console.log(req.body);
     console.log(req.file);
+    var data_type = req.params.nomeTemplate;
+    var guid = uuidv4();
     try {
       if (!req.file) {
         return res.status(400).send('No file uploaded.');
       }
 
       const fileExtension = path.extname(req.file.originalname).toLowerCase();
-      if (fileExtension !== '.csv' && fileExtension !== '.xlsx') {
-        return res.status(400).send('Invalid file type. Only .csv and .xlsx files are allowed.');
+      if (fileExtension !== '.xlsx') {
+        return res.status(400).send('Invalid file type. Only .xlsx files are allowed.');
       }
 
-      const uploadPath = path.join(process.env.UPLOAD_DIR, req.params.nomeTemplate, req.params.nomeTemplate + fileExtension);
+      const uploadPath = path.join(process.env.UPLOAD_DIR, data_type, guid + fileExtension);
       console.log(uploadPath);
       
 
@@ -26,11 +29,10 @@ class ColaboreController {
           return res.status(400).send('Failed to save file.');
         }
         
-        startPentahoJob();
+        startPentahoJob(data_type, guid);
 
-        const retornoPath = path.join(process.env.RESPONSE_DIR, 'result.txt');
-        const errorRetornoPath = path.join(process.env.RESPONSE_DIR, 'error.txt');
-        console.log(retornoPath);
+        const retornoPath = path.join(process.env.UPLOAD_DIR, data_type,`${guid}_result.txt`);
+        const errorRetornoPath = path.join(process.env.UPLOAD_DIR, data_type,`${guid}_error.txt`);
 
         checkFileExists(retornoPath, errorRetornoPath, 2 * 60 * 1000)
           .then(() => {
@@ -42,7 +44,7 @@ class ColaboreController {
             });
           })
           .catch((err) => {
-            if (err.includes('arquivo')) {
+            if (err.includes('file')) {
               fs.readFile(errorRetornoPath, 'utf8', (err, data) => {
                 if (err) {
                   return res.status(400).send('Failed to read error.txt.');
@@ -85,19 +87,19 @@ const checkFileExists = (filePath, errorFilePath, timeout) => {
         resolve(true);
       } else if (fs.existsSync(errorFilePath)) {
         clearInterval(interval);
-        reject('Erro ao processar arquivo.');
+        reject('Error processing file.');
       } else if (Date.now() - startTime > timeout) {
         clearInterval(interval);
-        reject('Timeout waiting for retorno.txt to be created.');
+        reject('Timeout waiting for response to be created.');
       }
     }, 1000);
   });
 };
 
-const startPentahoJob = () => {
-  const batFilePath = path.join(SCRIPT_DIR, 'agendador.bat');
+const startPentahoJob = (data_type, guid) => {
+  const command = `${process.env.KITCHEN_DIR}\\Kitchen.bat /file="${process.env.JOB_DIR}\\1.GerarProjeto.kjb" /param:"data_type=${data_type}" /param:"guid=${guid}"`;
 
-  const bat = spawn('cmd.exe', ['/c', batFilePath]);
+  const bat = spawn('cmd.exe', ['/c', command], { shell: true });
 
   bat.stdout.on('data', (data) => {
     console.log(`Saída: ${data}`);
